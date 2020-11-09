@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button, Card, Icon, Image, Label } from 'semantic-ui-react'
 import moment from 'moment'
+import { Link } from 'react-router-dom'
 
 const PostCard = ({ post: {
     body, createdAt, id, username, likeCount,
@@ -16,7 +17,7 @@ const PostCard = ({ post: {
                     src='https://react.semantic-ui.com/images/avatar/large/steve.jpg'
                 />
                 <Card.Header>{username}</Card.Header>
-                <Card.Meta>{moment(createdAt).fromNow(true)}</Card.Meta>
+                <Card.Meta as={Link} to={`/posts/${id}`}>{moment(createdAt).fromNow(true)}</Card.Meta>
                 <Card.Description>
                     {body}
                 </Card.Description>
