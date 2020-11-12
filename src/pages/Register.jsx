@@ -22,7 +22,7 @@ const Register = (props) => {
     }
 
     const [addUser, { loading }] = useMutation(REGISTER_USER, {
-        // result argument destructuring result.data.register === userData
+        // destructuring result argument result.data.register === userData
         update(_, { data: { register: userData } }) {
             login(userData)
             props.history.push('/')
@@ -72,7 +72,7 @@ const Register = (props) => {
                     onChange={onChange} />
                 <Button type="submit" primary>
                     Register
-                    </Button>
+                </Button>
             </Form>
             {Object.keys(errors).length > 0 && (
                 <div className="ui error message">
