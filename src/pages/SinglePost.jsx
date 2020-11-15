@@ -5,24 +5,33 @@ import moment from 'moment'
 
 import { AuthContext } from '../context/auth'
 import LikeButton from '../components/LikeButton'
+import DeleteButton from '../components/DeleteButton'
 
 const SinglePost = (props) => {
-    const { user } = useContext(AuthContext)
     const postId = props.match.params.postId
+    const { user } = useContext(AuthContext)
 
-    const { data: { getPost } } = useQuery(FETCH_POST_QUERY, {
+    const { loading, data } = useQuery(FETCH_POST_QUERY, {
         variables: {
             postId
+        },
+        onError(err) {
+            return err
         }
     })
 
+    function deletePostCallback() {
+        props.history.push('/')
+    }
 
+    // TODO: Fix "data" destructuring, sometimes throws undefined 
     let postMarkup
-    if (!getPost) {
-        postMarkup = <p>Loading Post...</p>
+    // if (!data.getPost || !data) {
+    if (loading) {
+        return <p>Loading Post...</p>
     } else {
         const { id, body, createdAt, username, comments,
-            likes, likeCount, commentCount } = getPost
+            likes, likeCount, commentCount } = data.getPost
 
         postMarkup = (
             <Grid>
@@ -30,10 +39,10 @@ const SinglePost = (props) => {
                     <Grid.Column width={2}>
                         <Image
                             src='https://react.semantic-ui.com/images/avatar/large/steve.jpg'
-                            size="smal"
+                            size="small"
                             float="right" />
                     </Grid.Column>
-                    <Grid.Column width={2}>
+                    <Grid.Column width={10}>
                         <Card fluid>
                             <Card.Content>
                                 <Card.Header>{username}</Card.Header>
@@ -54,24 +63,22 @@ const SinglePost = (props) => {
                                         {commentCount}
                                     </Label>
                                 </Button>
+                                {user && user.username === username && (
+                                    <DeleteButton postId={id} callback={deletePostCallback} />
+                                )}
                             </Card.Content>
                         </Card>
                     </Grid.Column>
                 </Grid.Row>
             </Grid>
         )
+        return postMarkup
     }
-
-    return (
-        <div>
-
-        </div>
-    )
 }
 
 const FETCH_POST_QUERY = gql`
-    query($postId: ID!){
-        getPost(postId: $postId){
+    query($postId: ID!) {
+        getPost(postId: $postId) {
             id body createdAt username likeCount
             likes {
                 username
